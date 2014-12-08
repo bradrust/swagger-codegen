@@ -36,11 +36,11 @@ public class JavaClientCodegen extends DefaultCodegen implements CodegenConfig {
     additionalProperties.put("artifactVersion", artifactVersion);
 
     supportingFiles.add(new SupportingFile("pom.mustache", "", "pom.xml"));
-    supportingFiles.add(new SupportingFile("apiInvoker.mustache", 
+    supportingFiles.add(new SupportingFile("apiInvoker.mustache",
       (sourceFolder + File.separator + invokerPackage).replace(".", java.io.File.separator), "ApiInvoker.java"));
-    supportingFiles.add(new SupportingFile("JsonUtil.mustache", 
+    supportingFiles.add(new SupportingFile("JsonUtil.mustache",
       (sourceFolder + File.separator + invokerPackage).replace(".", java.io.File.separator), "JsonUtil.java"));
-    supportingFiles.add(new SupportingFile("apiException.mustache", 
+    supportingFiles.add(new SupportingFile("apiException.mustache",
       (sourceFolder + File.separator + invokerPackage).replace(".", java.io.File.separator), "ApiException.java"));
 
     languageSpecificPrimitives = new HashSet<String>(
@@ -61,6 +61,28 @@ public class JavaClientCodegen extends DefaultCodegen implements CodegenConfig {
   @Override
   public String escapeReservedWord(String name) {
     return "_" + name;
+  }
+
+  private String camelCase(String name) {
+      StringBuilder sb = new StringBuilder();
+      String[] x = name.split("_");
+      sb.append(x[0]);
+      for (int i = 1; i < x.length; i++) {
+          sb.append(initialCaps(x[i]));
+      }
+      return sb.toString();
+  }
+
+  @Override
+  public String initialCaps(String name) {
+      name = camelCase(name);
+      return Character.toUpperCase(name.charAt(0)) + name.substring(1);
+  }
+
+  public String toVarName(String name) {
+      String vn = super.toVarName(name);
+      return camelCase(vn);
+      // return vn.replaceAll("_", "-");
   }
 
   @Override
